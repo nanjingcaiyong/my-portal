@@ -1,21 +1,44 @@
-import { AxiosRequestConfig } from 'axios';
-import { instance, Module, ApiConfig } from '../utils/axios'
+import axios from 'axios';
+const eagerImportModules = import.meta.glob('./*.ts', { eager: true }) as any;
 
+const instance = axios.create({
+  timeout: 5000
+});
 
-// 合并文件夹下所有模块
-const queryAllModules = () => {
-  const files = import.meta.glob<any>('./*.ts', { eager: true })
-  return Object.keys(files).reduce((modules: Module, modulePath) => {
-    files[modulePath].default.forEach((config: ApiConfig) => {
-      const moduleName = /\w+/.exec(modulePath)?.[0]?.toUpperCase() || ''; // 模块名大写
-      const apiName = `${moduleName}_${config.name}`
-      modules[apiName] = (params: any, resetConfig: AxiosRequestConfig<any> | undefined) =>
-        ['POST', 'CANCELPOST'].includes(config.type.toUpperCase())
-          ? instance[config.type](config.path, params, resetConfig)
-          : instance[config.type](config.path, params);
+/**
+ * @description 模块路径转模块名
+ * @param modulePath 模块路径
+ * @returns 
+ */
+const toModuleName = (modulePath: string) => /(?<=\/)[a-zA-Z]+(?=.ts)/.exec(modulePath)?.[0] || '';
+
+/**
+ * @description 组装api
+ * @param modulePath 模块路径
+ * @returns 
+ */
+const groupApi = (modulePath: string) => {
+  return eagerImportModules[modulePath].default.reduce((api, config: ApiConfig) => {
+    const isGetMethod = config.type.toUpperCase() === 'GET';
+    const url = process.env.AUTH + config.path;
+    return Object.assign({}, api, {
+      [config.name]: async (obj, resetConfig: Record<string, any>) => {
+        const params = Object.assign({}, obj, resetConfig);
+        const res = await instance.post(url, isGetMethod ? {params} : params);
+        const httpCode = res.status.toString()[0];
+        if (httpCode === '2') {
+          return res.data;
+        }
+        return {};
+      }
     });
-    return modules
-  }, {})
+  }, {});
 };
 
-export default queryAllModules()
+const apis = Object.keys(eagerImportModules).reduce((module, modulePath) =>{
+  const moduleName = toModuleName(modulePath);
+  return Object.assign({}, module, {[moduleName]: groupApi(modulePath)});
+}, {});
+
+
+export default apis;

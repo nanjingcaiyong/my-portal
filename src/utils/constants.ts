@@ -1,0 +1,2 @@
+export const PORTAL_TOKEN_KEY = 'PORTAL_TOKEN';
+export const AUTO_LOGIN_KEY = 'AUTO_LOGIN';

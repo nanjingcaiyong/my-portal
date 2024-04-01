@@ -11,7 +11,18 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "rootDir": ".",
+    "paths": {
+      "@ant-design/icons-vue": ["node_modules/@ant-design/icons-vue"],
+      "@/*": [
+        "src/*"
+      ],
+      "@src/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts", 

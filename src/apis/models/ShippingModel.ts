@@ -1,7 +1,7 @@
-import { BaseModel } from './baseModel';
+import { BaseModel } from './BaseModal';
 
 type Model = {
   name: string
 }
 
-export class Shipping extends BaseModel<Model> {}
+export type Shipping = BaseModel<Model>
