@@ -62,7 +62,7 @@
 </template>
 <script setup lang="ts">
 import { reactive } from 'vue';
-// import router from '@src/router';
+import actions from '@src/store';
 import { PORTAL_TOKEN_KEY } from '@src/utils'
 import { CheckboxChangeEvent } from 'ant-design-vue/es/_util/EventInterface';
 interface FormState {
@@ -91,6 +91,9 @@ const onSubmit = async () => {
   });
   if (res.success) {
     localStorage.setItem(PORTAL_TOKEN_KEY, res.data.token);
+    actions.setGlobalState({
+      token: res.data.token
+    })
     router.push({path: '/app1/page1'})
   }
 };

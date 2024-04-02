@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import Router from './router';
 import 'tailwindcss/tailwind.css';
+import actions from '@src/store';
 
 import { 
   registerMicroApps, 
@@ -22,6 +23,7 @@ const apps = [{
   activeRule: '/app1', // 必选，微应用的激活规则
   props: {
     route: '/app1',
+    getGlobalState: actions.getGlobalState
   }
 }, {
   name: 'app2', // 必选，微应用的名称，微应用之间必须确保唯一。
@@ -30,6 +32,7 @@ const apps = [{
   activeRule: '/app2', // 必选，微应用的激活规则
   props: {
     route: '/app2',
+    getGlobalState: actions.getGlobalState
   }
 }]
 
