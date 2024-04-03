@@ -18,13 +18,13 @@ const toModuleName = (modulePath: string) => /(?<=\/)[a-zA-Z]+(?=.ts)/.exec(modu
  * @returns 
  */
 const groupApi = (modulePath: string) => {
-  return eagerImportModules[modulePath].default.reduce((api, config: ApiConfig) => {
+  return eagerImportModules[modulePath].default.reduce((api: Record<string, any>, config: ApiConfig) => {
     const isGetMethod = config.type.toUpperCase() === 'GET';
     const url = process.env.AUTH + config.path;
     return Object.assign({}, api, {
-      [config.name]: async (obj, resetConfig: Record<string, any>) => {
-        const params = Object.assign({}, obj, resetConfig);
-        const res = await instance.post(url, isGetMethod ? {params} : params);
+      [config.name]: async (params: Record<string, any>, resetConfig: Record<string, any>) => {
+        params = Object.assign({}, params, resetConfig);
+        const res = await instance[config.type](url, isGetMethod ? {params} : params);
         const httpCode = res.status.toString()[0];
         if (httpCode === '2') {
           return res.data;

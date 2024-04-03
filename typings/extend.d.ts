@@ -1,11 +1,5 @@
-type Method = 'get'| 'delete'| 'post'| 'put'| 'cancelGet' | 'cancelPost';
+import { Router } from "vue-router";
 
-declare interface ApiConfig {
-  name: string,
-  path: string,
-  type: Method,
-  moduleName?: string
-}
 
-declare const $API: API;
+declare const router: Router
 declare const createStore: createStore;

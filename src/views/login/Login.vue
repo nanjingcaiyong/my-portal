@@ -38,7 +38,6 @@
             >
               自动登录
             </a-checkbox>
-
             <a-button
               type="link"
             >
@@ -64,7 +63,7 @@
 import { reactive } from 'vue';
 import actions from '@src/store';
 import { PORTAL_TOKEN_KEY } from '@src/utils'
-import { CheckboxChangeEvent } from 'ant-design-vue/es/_util/EventInterface';
+import { CheckboxChangeEvent } from 'ant-design-vue/es/checkbox/interface';
 interface FormState {
   username: string;
   password: string;
@@ -77,6 +76,9 @@ const store = reactive<FormState>({
 });
 
 const onchangeAutoLogin = (e: CheckboxChangeEvent) => {
+  document.addEventListener('eer', (e) => {
+    e.target
+  })
   if (e.target.checked) {
     localStorage.setItem('AUTO_LOGIN', '1');
   } else {
@@ -85,7 +87,7 @@ const onchangeAutoLogin = (e: CheckboxChangeEvent) => {
 }
 
 const onSubmit = async () => {
-  const res = await $API.AUTH.login({
+  const res = await $API.AUTH.login<any>({
     account: store.username,
     password: store.password
   });

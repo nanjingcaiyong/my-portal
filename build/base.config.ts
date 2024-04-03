@@ -24,7 +24,7 @@ const plugins: Plugin[] = [
   Components({
     resolvers: [
       AntDesignVueResolver({
-        importStyle: 'less',
+        importStyle: false,
       }),
     ],
   }),
@@ -33,7 +33,7 @@ const config: UserConfig = {
   base: '/',
   plugins,
   resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx", ".vue", ".json"],
+    extensions: [".js", ".jsx", ".mjs", ".ts", ".tsx", ".vue", ".json"],
     alias: {
       '@src': path.resolve(__dirname, '..' ,'src')
     }

@@ -1,5 +1,7 @@
 <template>
-  <router-view></router-view>
+  <a-watermark content="蔡勇">
+    <router-view></router-view>
+  </a-watermark>
 </template>
 
 <script setup>
