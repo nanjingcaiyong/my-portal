@@ -77,14 +77,14 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, VueElement, h } from 'vue';
+import { reactive, VueElement, h } from 'vue';
 import {
   UserOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   GlobalOutlined
 } from '@ant-design/icons-vue';
-import type { MenuProps, ItemType } from 'ant-design-vue';
+import type { ItemType } from 'ant-design-vue';
 const store = reactive<{
   items: ItemType[],
   selectedKeys: string[],
