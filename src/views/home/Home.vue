@@ -36,14 +36,14 @@
                 <template #overlay>
                   <a-menu>
                     <a-menu-item>
-                      <a href="javascript:;">个人中心</a>
+                      <a href="javascript:;">{{$t('personal center')}}</a>
                     </a-menu-item>
                     <a-menu-item>
-                      <a href="javascript:;">个人设置</a>
+                      <a href="javascript:;">{{$t('personal settings')}}</a>
                     </a-menu-item>
                     <a-menu-divider />
                     <a-menu-item @click="onLogout">
-                      <a href="javascript:;">退出登录</a>
+                      <a href="javascript:;">{{$t('logout')}}</a>
                     </a-menu-item>
                   </a-menu>
                 </template>
@@ -53,11 +53,11 @@
                   <GlobalOutlined  style="font-size: 22px;" class="align-middle"/>
                 </div>
                 <template #overlay>
-                  <a-menu>
-                    <a-menu-item>
+                  <a-menu @click="triggerLanguage">
+                    <a-menu-item key="zh-CN">
                       <a href="javascript:;">简体中文</a>
                     </a-menu-item>
-                    <a-menu-item>
+                    <a-menu-item key="en-US">
                       <a href="javascript:;">English</a>
                     </a-menu-item>
                   </a-menu>
@@ -78,6 +78,8 @@
 </template>
 <script lang="ts" setup>
 import { reactive, VueElement, h } from 'vue';
+import { useI18n } from "vue-i18n";
+const { locale } = useI18n();
 import {
   UserOutlined,
   MenuUnfoldOutlined,
@@ -85,6 +87,7 @@ import {
   GlobalOutlined
 } from '@ant-design/icons-vue';
 import type { ItemType } from 'ant-design-vue';
+import { MenuItemType } from 'ant-design-vue/es/menu/src/interface';
 const store = reactive<{
   items: ItemType[],
   selectedKeys: string[],
@@ -94,6 +97,10 @@ const store = reactive<{
   selectedKeys: ['1'],
   collapsed: false
 })
+
+const triggerLanguage = (e: MenuItemType) => {
+  locale.value = e.key as string;
+}
 
 /**
  * @description 数据转菜单参数格式

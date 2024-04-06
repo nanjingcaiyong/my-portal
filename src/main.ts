@@ -3,6 +3,7 @@ import App from './App.vue';
 import Router from './router';
 import 'tailwindcss/tailwind.css';
 import actions from '@src/store';
+import { initI18n } from '@src/languages';
 
 import { 
   registerMicroApps, 
@@ -13,6 +14,7 @@ import {
 function bootstrap() {
   const app = createApp(App)
     .use(Router)
+    .use(initI18n())
     .mount('#app')
 }
 
