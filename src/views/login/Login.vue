@@ -76,9 +76,6 @@ const store = reactive<FormState>({
 });
 
 const onchangeAutoLogin = (e: CheckboxChangeEvent) => {
-  document.addEventListener('eer', (e) => {
-    e.target
-  })
   if (e.target.checked) {
     localStorage.setItem('AUTO_LOGIN', '1');
   } else {
