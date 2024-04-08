@@ -1,5 +1,4 @@
-import { Shipping } from './ShippingModel'
-
+import { MenuData } from './MenuModel'
 declare global {
-  type ShippingModel = Shipping
+  type MenuModel = MenuData
 }

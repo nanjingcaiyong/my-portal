@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import App1Routes from './app1';
-import App2Routes from './app2'
 import { Login } from '@src/views'
 import { PORTAL_TOKEN_KEY } from '@src/utils';
 import { AUTO_LOGIN_KEY } from '@src/utils/constants'
@@ -10,10 +8,7 @@ const router = createRouter({
   routes: [{
     path: '/login', 
     component: Login
-  },
-  ...App1Routes,
-  ...App2Routes
-],
+  }]
 })
 
 router.beforeEach((to, from, next) => {

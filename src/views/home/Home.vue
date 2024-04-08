@@ -78,6 +78,7 @@
 <script lang="ts" setup>
 import { reactive, VueElement, h } from 'vue';
 import { useI18n } from "vue-i18n";
+import type { Menu } from '@src/apis/models/MenuModel'
 const { locale } = useI18n();
 import {
   UserOutlined,
@@ -87,6 +88,9 @@ import {
 } from '@ant-design/icons-vue';
 import type { ItemType } from 'ant-design-vue';
 import { MenuItemType } from 'ant-design-vue/es/menu/src/interface';
+const props = withDefaults(defineProps<{menus: Menu[]}>(), {
+  menus: () => []
+})
 const store = reactive<{
   items: ItemType[],
   selectedKeys: string[],
@@ -144,10 +148,7 @@ const onClickMenuItem = (item: any) => {
 }
 
 const main = async () => {
-  const res = await $API.MENU.queryList<any>()
-  if (res.success && res.data.length) {
-    store.items = menuToTree(res.data);
-  }
+  store.items = menuToTree(props.menus) || [];
 }
 main()
 </script>

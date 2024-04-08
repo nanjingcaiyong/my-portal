@@ -4,44 +4,80 @@ import Router from './router';
 import 'tailwindcss/tailwind.css';
 import actions from '@src/store';
 import { initI18n } from '@src/languages';
+import { Home } from '@src/views'
+import type { Menu } from '@src/apis/models/MenuModel'
 
 import { 
-  registerMicroApps, 
-  start,
-  setDefaultMountApp
-} from 'qiankun'
+  loadMicroApp,
+  start
+} from 'qiankun';
 
-function bootstrap() {
-  const app = createApp(App)
+/**
+ * @description 挂载应用
+ * @param menus 菜单
+ */
+const bootstrap = (menus: Menu[] = []) => {
+  const app = createApp(App, {menus})
     .use(Router)
     .use(initI18n())
     .mount('#app')
+    return menus
 }
 
-const apps = [{
-  name: 'app1', // 必选，微应用的名称，微应用之间必须确保唯一。
-  entry: '//localhost:5174', // 微应用的入口
-  container: '#app1', // 必选，微应用的容器节点的选择器或者 Element 实例
-  activeRule: '/app1', // 必选，微应用的激活规则
-  props: {
-    route: '/app1',
-    getGlobalState: actions.getGlobalState
+/**
+ * @description 注册路由
+ * @param menus 菜单
+ */
+const registerRootes = async (menus: Menu[] = []) => {
+  let index = -1;
+  if (menus.length === 0) return;
+  while(++index < menus.length) {
+    let menu = menus[index];
+    menu.children = menu.children || [];
+    if (menu.children.length === 0) continue;
+    menu.children.forEach(subMenu => {
+      Router.addRoute({ path: subMenu.path, component: Home })
+    })
   }
-}, {
-  name: 'app2', // 必选，微应用的名称，微应用之间必须确保唯一。
-  entry: '//localhost:5175', // 微应用的入口
-  container: '#app2', // 必选，微应用的容器节点的选择器或者 Element 实例
-  activeRule: '/app2', // 必选，微应用的激活规则
-  props: {
-    route: '/app2',
-    getGlobalState: actions.getGlobalState
+  return menus
+}
+
+/**
+ * @description 注册系统
+ * @param menus 菜单
+ */
+const registerSystem = (menus: Menu[] = []) => {
+  menus.forEach((menu: any) => {
+    loadMicroApp({
+      name: menu.code,
+      entry: menu.path,
+      container: `#${menu.code}`,
+      props: {
+        route: `/${menu.code}`,
+        getGlobalState: actions.getGlobalState
+      }
+    });
+  })
+}
+
+/**
+ * @description 请求菜单数据
+ * @returns 
+ */
+const queryMenuList = async () => {
+  const res = await $API.MENU.queryList<MenuModel>()
+  if (res.success && res.data.length) {
+    return res.data;
   }
-}]
+  return []
+}
 
-bootstrap()
-registerMicroApps(apps)
-start()
+queryMenuList()
+  .then(registerRootes)
+  .then(bootstrap)
+  .then(registerSystem)
 
+start();
 
 
 

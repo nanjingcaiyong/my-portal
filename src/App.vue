@@ -1,11 +1,16 @@
 <template>
   <a-watermark content="蔡勇">
-    <router-view></router-view>
+    <router-view :menus="menus"></router-view>
   </a-watermark>
 </template>
 
-<script setup>
-
+<script setup lang="ts">
+import type { Menu } from '@src/apis/models/MenuModel';
+withDefaults(defineProps<{
+  menus: Menu[]
+}>(), {
+  menus: () => ([])
+})
 </script>
 
 <style>
