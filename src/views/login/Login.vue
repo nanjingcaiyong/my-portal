@@ -93,7 +93,7 @@ const onSubmit = async () => {
     actions.setGlobalState({
       token: res.data.token
     })
-    router.push({path: '/app1/page1'})
+    router.push({path: '/home'})
   }
 };
 </script>
