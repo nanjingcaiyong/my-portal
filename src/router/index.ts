@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { RouteLocationNormalized, createRouter, createWebHistory } from 'vue-router';
 import { Home, Login} from '../views';
 import type { Menu } from '@src/apis/models/MenuModel';
 import { Layout } from '@src/views';
@@ -7,16 +7,84 @@ import { AUTO_LOGIN_KEY } from '@src/utils/constants';
 import {  loadMicroApp } from 'qiankun';
 import actions from '@src/store';
 
+const LOGIN_PAGE_PATH = '/login'; // 登陆页地址
+const HOME_PAGE_PATH = '/home';   // 首页地址
+const notLoadAppPages = [LOGIN_PAGE_PATH, HOME_PAGE_PATH];// 不需要接入微应用的页面 
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [{
-    path: '/login', 
+    path: LOGIN_PAGE_PATH, 
     component: Login
   }, {
-    path: '/home', 
+    path: HOME_PAGE_PATH, 
     component: Home
   }]
 })
+
+/**
+ * @description 页面加载微应用
+ * @param to 
+ * @param menus 菜单
+ */
+const pageLoadMicroApp = (to: RouteLocationNormalized, menus: Menu[]) => {
+  if (!to.matched.some(t => notLoadAppPages.includes(t.path))) {
+    registerSystem(menus)
+  }
+}
+
+/**
+ * @description 用户是否授权
+ * @returns 
+ */
+const isAuthenticated = () => {
+  return Boolean(localStorage.getItem(PORTAL_TOKEN_KEY))
+}
+
+/**
+ * @description 是否设置自动登录
+ * @returns 
+ */
+const isAutoLogin = () => {
+  return Boolean(localStorage.getItem(AUTO_LOGIN_KEY) === '1');
+}
+
+/**
+ * @description 是否需要授权
+ * @param to 
+ * @returns 
+ */
+const isRequiredAuth = (to: RouteLocationNormalized) => {
+  return to.matched.some(record => record.meta.requiresAuth)
+}
+
+/**
+ * @description 是否需要跳转到指定路径
+ * @param to 
+ * @param path 指定路径
+ * @returns 
+ */
+const isTo = (to: RouteLocationNormalized, path: string) => {
+  return to.matched.some(record => record.path === path)
+}
+
+/**
+ * @description 拦截路由
+ * @param menus 菜单
+ */
+const routerInterceptor = (menus: Menu[]) => {
+  router.beforeEach((to, from, next) => {
+    pageLoadMicroApp(to, menus)
+    if (isRequiredAuth(to) && !isAuthenticated()) {
+      next({ path: LOGIN_PAGE_PATH, query: { redirect: to.fullPath }});
+    }
+    if (isTo(to, LOGIN_PAGE_PATH) && isAuthenticated() && isAutoLogin()) {
+      next({ path: HOME_PAGE_PATH});
+    }
+    // 如果路由不需要鉴权，直接允许导航
+    next();
+  })
+}
 
 /**
  * @description 注册路由
@@ -28,33 +96,15 @@ export const registerRootes = async (menus: Menu[] = []) => {
   while(++index < menus.length) {
     let menu = menus[index];
     menu.children = menu.children || [];
-    if (menu.children.length === 0) continue;
+    if (menu.children.length === 0)  {
+      router.addRoute({path: menu.path, component: Layout})
+      continue
+    }
     menu.children.forEach(subMenu => {
       router.addRoute({ path: subMenu.path, component: Layout })
     })
   }
-  router.beforeEach((to, from, next) => {
-    const isAuthenticated = Boolean(localStorage.getItem(PORTAL_TOKEN_KEY))
-    const isAutoLogin = Boolean(localStorage.getItem(AUTO_LOGIN_KEY) === '1');
-    if (!to.matched.some(path => ['/login', '/home'].includes(path.path))) {
-      registerSystem(menus)
-    }
-    if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
-      // 如果用户未登录，重定向到登录页面
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      });
-    }
-    // 自动登录
-    if (to.path === '/login' && isAuthenticated && isAutoLogin) {
-      next({
-        path: '/home',
-      });
-    }
-    // 如果路由不需要鉴权，直接允许导航
-    next();
-  })
+  routerInterceptor(menus)
   return menus
 }
 
