@@ -1,83 +1,85 @@
 <template>
-  <a-layout class="content h-[100vh]">
-    <a-layout-sider v-model:collapsed="store.collapsed" :trigger="null" collapsible>
-      <div class="logo" />
-      <a-menu 
-        v-if="store.items.length" 
-        v-model:selectedKeys="store.selectedKeys" 
-        theme="dark" 
-        mode="inline"
-        :router="true"
-        :items="store.items"
-        @click="onClickMenuItem"
-      />
-    </a-layout-sider>
-    <a-layout>
-      <a-layout-header style="background: #fff; padding: 0">
-        <a-row gutter="24" justify="space-between" class="h-full">
-          <a-col :span="4">
-            <menu-unfold-outlined
-              v-if="store.collapsed"
-              class="trigger"
-              @click="() => (store.collapsed = !store.collapsed)"
-            />
-            <menu-fold-outlined v-else class="trigger" @click="() => (store.collapsed = !store.collapsed)" />
-          </a-col>
-          <a-col :span="30" class="h-full mr-[16px]">
-            <a-space :size="16" align="center">
-              <a-dropdown>
-                <div class="cursor-pointer px-[10px] :hover:bg-[#FAFAFA]">
-                  <a-avatar :size="28" class="mr-[8px]">
-                    <template #icon><UserOutlined /></template>
-                  </a-avatar>
-                  <span class="text-[#868686]">caiyong</span>
-                </div>
-                <template #overlay>
-                  <a-menu>
-                    <a-menu-item>
-                      <a href="javascript:;">{{$t('personal center')}}</a>
-                    </a-menu-item>
-                    <a-menu-item>
-                      <a href="javascript:;">{{$t('personal settings')}}</a>
-                    </a-menu-item>
-                    <a-menu-divider />
-                    <a-menu-item @click="onLogout">
-                      <a href="javascript:;">{{$t('logout')}}</a>
-                    </a-menu-item>
-                  </a-menu>
-                </template>
-              </a-dropdown>
-              <a-dropdown>
-                <div class="cursor-pointer">
-                  <GlobalOutlined  style="font-size: 22px;" class="align-middle"/>
-                </div>
-                <template #overlay>
-                  <a-menu @click="triggerLanguage">
-                    <a-menu-item key="zh-CN">
-                      <a href="javascript:;">简体中文</a>
-                    </a-menu-item>
-                    <a-menu-item key="en-US">
-                      <a href="javascript:;">English</a>
-                    </a-menu-item>
-                  </a-menu>
-                </template>
-              </a-dropdown>
-            </a-space>
-          </a-col>
-        </a-row>
-      </a-layout-header>
-      <a-layout-content
-        :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
-      >
-        <slot>
-          <div :id="menu.code" v-for="menu in menus"></div>
-        </slot>
-      </a-layout-content>
+      <a-layout class="content h-[100vh]">
+      <a-layout-sider v-model:collapsed="store.collapsed" :trigger="null" collapsible>
+        <div class="logo" />
+        <a-menu 
+          v-if="store.items.length" 
+          v-model:selectedKeys="store.selectedKeys" 
+          theme="dark" 
+          mode="inline"
+          :router="true"
+          :items="store.items"
+          @click="onClickMenuItem"
+        />
+      </a-layout-sider>
+      <a-layout>
+        <a-layout-header style="background: #fff; padding: 0">
+          <a-row gutter="24" justify="space-between" class="h-full">
+            <a-col :span="4">
+              <menu-unfold-outlined
+                v-if="store.collapsed"
+                class="trigger"
+                @click="() => (store.collapsed = !store.collapsed)"
+              />
+              <menu-fold-outlined v-else class="trigger" @click="() => (store.collapsed = !store.collapsed)" />
+            </a-col>
+            <a-col :span="30" class="h-full mr-[16px]">
+              <a-space :size="16" align="center">
+                <a-dropdown>
+                  <div class="cursor-pointer px-[10px] :hover:bg-[#FAFAFA]">
+                    <a-avatar :size="28" class="mr-[8px]">
+                      <template #icon><UserOutlined /></template>
+                    </a-avatar>
+                    <span class="text-[#868686]">
+                      {{ account.account }}
+                    </span>
+                  </div>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item>
+                        <a href="javascript:;">{{$t('personal center')}}</a>
+                      </a-menu-item>
+                      <a-menu-item>
+                        <a href="javascript:;">{{$t('personal settings')}}</a>
+                      </a-menu-item>
+                      <a-menu-divider />
+                      <a-menu-item @click="onLogout">
+                        <a href="javascript:;">{{$t('logout')}}</a>
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+                <a-dropdown>
+                  <div class="cursor-pointer">
+                    <GlobalOutlined  style="font-size: 22px;" class="align-middle"/>
+                  </div>
+                  <template #overlay>
+                    <a-menu @click="triggerLanguage">
+                      <a-menu-item key="zh-CN">
+                        <a href="javascript:;">简体中文</a>
+                      </a-menu-item>
+                      <a-menu-item key="en-US">
+                        <a href="javascript:;">English</a>
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </a-space>
+            </a-col>
+          </a-row>
+        </a-layout-header>
+        <a-layout-content
+          :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
+        >
+          <slot>
+            <div :id="menu.code" v-for="menu in menus"></div>
+          </slot>
+        </a-layout-content>
+      </a-layout>
     </a-layout>
-  </a-layout>
 </template>
 <script lang="ts" setup>
-import { reactive, VueElement, h, nextTick } from 'vue';
+import { reactive, VueElement, h } from 'vue';
 import { useI18n } from "vue-i18n";
 import type { Menu } from '@src/apis/models/MenuModel';
 const { locale } = useI18n();
@@ -89,8 +91,10 @@ import {
 } from '@ant-design/icons-vue';
 import type { ItemType } from 'ant-design-vue';
 import { MenuItemType } from 'ant-design-vue/es/menu/src/interface';
-const props = withDefaults(defineProps<{menus: Menu[]}>(), {
-  menus: () => []
+import { PORTAL_TOKEN_KEY, PORTAL_USER_KEY, SYSTEM_LOCALE_KEY } from '@src/utils'
+const props = withDefaults(defineProps<{menus: Menu[], account: any}>(), {
+  menus: () => ([]),
+  account: () => ({})
 })
 const store = reactive<{
   items: ItemType[],
@@ -104,6 +108,8 @@ const store = reactive<{
 
 const triggerLanguage = (e: MenuItemType) => {
   locale.value = e.key as string;
+  const systemInfo = JSON.parse(localStorage.getItem(SYSTEM_LOCALE_KEY) || '{}')
+  localStorage.setItem(SYSTEM_LOCALE_KEY, JSON.stringify(Object.assign(systemInfo, {langCode: locale.value})))
 }
 
 /**
@@ -132,7 +138,8 @@ function menuToTree(menuList: any[] = []): any {
 }
 
 const onLogout = () => {
-  localStorage.setItem('PORTAL_TOKEN', '')
+  localStorage.setItem(PORTAL_TOKEN_KEY, '')
+  localStorage.setItem(PORTAL_USER_KEY, '')
   router.push({
     path: '/login'
   })

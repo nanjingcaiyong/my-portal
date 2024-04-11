@@ -6,6 +6,7 @@ import { PORTAL_TOKEN_KEY } from '@src/utils';
 import { AUTO_LOGIN_KEY } from '@src/utils/constants';
 import {  loadMicroApp } from 'qiankun';
 import actions from '@src/store';
+import { nextTick } from 'vue';
 
 const LOGIN_PAGE_PATH = '/login'; // 登陆页地址
 const HOME_PAGE_PATH = '/home';   // 首页地址
@@ -18,7 +19,10 @@ const router = createRouter({
     component: Login
   }, {
     path: HOME_PAGE_PATH, 
-    component: Home
+    component: Home,
+    meta: {
+      requiresAuth: true
+    }
   }]
 })
 
@@ -74,13 +78,17 @@ const isTo = (to: RouteLocationNormalized, path: string) => {
  */
 const routerInterceptor = (menus: Menu[]) => {
   router.beforeEach((to, from, next) => {
-    pageLoadMicroApp(to, menus)
+    // 需要授权的页面未授权跳转登录页
     if (isRequiredAuth(to) && !isAuthenticated()) {
-      next({ path: LOGIN_PAGE_PATH, query: { redirect: to.fullPath }});
+      return next({ path: LOGIN_PAGE_PATH, query: { redirect: to.fullPath }});
     }
     if (isTo(to, LOGIN_PAGE_PATH) && isAuthenticated() && isAutoLogin()) {
-      next({ path: HOME_PAGE_PATH});
+      return next({ path: HOME_PAGE_PATH});
     }
+    // 注册微应用
+    nextTick(() => {
+      pageLoadMicroApp(to, menus)
+    });
     // 如果路由不需要鉴权，直接允许导航
     next();
   })
@@ -90,18 +98,18 @@ const routerInterceptor = (menus: Menu[]) => {
  * @description 注册路由
  * @param menus 菜单
  */
-export const registerRootes = async (menus: Menu[] = []) => {
+export const registerRoutes = async (menus: Menu[] = []) => {
   let index = -1;
   if (menus.length === 0) return;
   while(++index < menus.length) {
     let menu = menus[index];
     menu.children = menu.children || [];
     if (menu.children.length === 0)  {
-      router.addRoute({path: menu.path, component: Layout})
+      router.addRoute({path: menu.path, component: Layout, meta: { requiresAuth: true }})
       continue
     }
     menu.children.forEach(subMenu => {
-      router.addRoute({ path: subMenu.path, component: Layout })
+      router.addRoute({ path: subMenu.path, component: Layout, meta: { requiresAuth: true } })
     })
   }
   routerInterceptor(menus)
@@ -119,7 +127,7 @@ const registerSystem = (menus: Menu[] = []) => {
       entry: menu.path,
       container: `#${menu.code}`,
       props: {
-        route: `/${menu.code}`,
+        route: `/${menu.path}`,
         getGlobalState: actions.getGlobalState
       }
     });

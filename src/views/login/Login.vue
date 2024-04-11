@@ -62,8 +62,10 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import actions from '@src/store';
-import { PORTAL_TOKEN_KEY } from '@src/utils'
+import { AutoLogin, changeAutoLogin } from '@src/utils';
 import { CheckboxChangeEvent } from 'ant-design-vue/es/checkbox/interface';
+import { setToken, setAccount } from '@src/utils'
+import { useRoute } from 'vue-router';
 interface FormState {
   username: string;
   password: string;
@@ -75,25 +77,31 @@ const store = reactive<FormState>({
   remember: false
 });
 
+const route = useRoute();
+
+/**
+ * @description 切换自动登录
+ * @param e 
+ */
 const onchangeAutoLogin = (e: CheckboxChangeEvent) => {
-  if (e.target.checked) {
-    localStorage.setItem('AUTO_LOGIN', '1');
-  } else {
-    localStorage.setItem('AUTO_LOGIN', '0');
-  }
+  changeAutoLogin(e.target.checked ? AutoLogin.AUTO_LOGIN : AutoLogin.NOT_AUTO_LOGIN);
 }
 
+/**
+ * @description 登陆
+ */
 const onSubmit = async () => {
   const res = await $API.AUTH.login<any>({
     account: store.username,
     password: store.password
   });
   if (res.success) {
-    localStorage.setItem(PORTAL_TOKEN_KEY, res.data.token);
+    setToken(res.data.token);
+    setAccount(res.data?.account);
     actions.setGlobalState({
       token: res.data.token
     })
-    router.push({path: '/home'})
+    router.push({path: route.query.redirect ? String(route.query.redirect) : '/home'})
   }
 };
 </script>

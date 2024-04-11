@@ -1,13 +1,22 @@
 import { createApp, reactive } from 'vue';
 import App from './App.vue';
-import Router, { registerRootes } from './router';
+import Router, { registerRoutes } from './router';
 import 'tailwindcss/tailwind.css';
 import { initI18n } from '@src/languages';
 import type { Menu } from '@src/apis/models/MenuModel'
-
 import { start } from 'qiankun';
 
-const store = reactive<{menus: Menu[]}>({menus: []})
+const store = reactive<{
+  menus: Menu[], 
+  account: Record<string, any>,
+  updateAccount: (account: Record<string, any>) => void
+}>({
+  menus: [],
+  account: {},
+  updateAccount: (account: Record<string, any>) => {
+    store.account = account
+  }
+})
 
 /**
  * @description 挂载应用
@@ -35,7 +44,7 @@ const queryMenuList = async () => {
 }
 
 queryMenuList()
-  .then(registerRootes)
+  .then(registerRoutes)
   .then(bootstrap)
 
 start();

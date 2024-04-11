@@ -1,2 +1,4 @@
 export const PORTAL_TOKEN_KEY = 'PORTAL_TOKEN';
+export const PORTAL_USER_KEY = 'PORTAL_USER';
 export const AUTO_LOGIN_KEY = 'AUTO_LOGIN';
+export const SYSTEM_LOCALE_KEY = 'SYSTEM_INFO';
