@@ -1,13 +1,11 @@
 <template>
-  <a-watermark :content="store.account?.account">
-    <router-view  v-bind="store" />
-  </a-watermark>
+  <router-view  v-bind="store" />
 </template>
 
 <script setup lang="ts">
 import type { Menu } from '@src/apis/models/MenuModel';
 import { reactive } from 'vue';
-import { PORTAL_USER_KEY, getAccount } from '@src/utils'
+import { getAccount } from '@src/utils'
 const props = withDefaults(defineProps<{
   menus: Menu[]
 }>(), {
@@ -16,7 +14,7 @@ const props = withDefaults(defineProps<{
 
 const store = reactive({
   menus: props.menus,
-  account: JSON.parse(localStorage.getItem(PORTAL_USER_KEY) || '{}')
+  account: getAccount()
 })
 
 </script>

@@ -66,6 +66,7 @@ import { AutoLogin, changeAutoLogin } from '@src/utils';
 import { CheckboxChangeEvent } from 'ant-design-vue/es/checkbox/interface';
 import { setToken, setAccount } from '@src/utils'
 import { useRoute } from 'vue-router';
+import { rootStore } from '@src/store';
 interface FormState {
   username: string;
   password: string;

@@ -1,5 +1,6 @@
 <template>
-      <a-layout class="content h-[100vh]">
+  <a-watermark :content="rootStore.account?.account">
+    <a-layout class="content h-[100vh]">
       <a-layout-sider v-model:collapsed="store.collapsed" :trigger="null" collapsible>
         <div class="logo" />
         <a-menu 
@@ -31,7 +32,7 @@
                       <template #icon><UserOutlined /></template>
                     </a-avatar>
                     <span class="text-[#868686]">
-                      {{ account.account }}
+                      {{ rootStore.account?.account }}
                     </span>
                   </div>
                   <template #overlay>
@@ -72,17 +73,19 @@
           :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
         >
           <slot>
-            <div :id="menu.code" v-for="menu in menus"></div>
+            <div :id="menu.code" v-for="menu in rootStore.menus"></div>
           </slot>
         </a-layout-content>
       </a-layout>
     </a-layout>
+  </a-watermark>
 </template>
 <script lang="ts" setup>
 import { reactive, VueElement, h } from 'vue';
 import { useI18n } from "vue-i18n";
-import type { Menu } from '@src/apis/models/MenuModel';
+import { rootStore } from '@src/store';
 const { locale } = useI18n();
+
 import {
   UserOutlined,
   MenuUnfoldOutlined,
@@ -91,11 +94,8 @@ import {
 } from '@ant-design/icons-vue';
 import type { ItemType } from 'ant-design-vue';
 import { MenuItemType } from 'ant-design-vue/es/menu/src/interface';
-import { PORTAL_TOKEN_KEY, PORTAL_USER_KEY, SYSTEM_LOCALE_KEY } from '@src/utils'
-const props = withDefaults(defineProps<{menus: Menu[], account: any}>(), {
-  menus: () => ([]),
-  account: () => ({})
-})
+import { PORTAL_TOKEN_KEY, PORTAL_USER_KEY, SYSTEM_LOCALE_KEY, getAccount } from '@src/utils';
+
 const store = reactive<{
   items: ItemType[],
   selectedKeys: string[],
@@ -156,7 +156,8 @@ const onClickMenuItem = (item: any) => {
 }
 
 const main = async () => {
-  store.items = menuToTree(props.menus) || [];
+  store.items = menuToTree(rootStore.menus) || [];
+  rootStore.account = getAccount();
 }
 main()
 </script>
