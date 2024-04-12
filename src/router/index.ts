@@ -46,6 +46,11 @@ const isTo = (to: RouteLocationNormalized, path: string) => {
  */
 const routerInterceptor = (menus: Menu[]) => {
   router.beforeEach((to, from, next) => {
+    if (to.path === '/') {
+      return next({
+        path: LOGIN_PAGE_PATH
+      })
+    }
     // 需要授权的页面未授权跳转登录页
     if (isRequiredAuth(to) && !isAuthenticated()) {
       return next({ path: LOGIN_PAGE_PATH, query: { redirect: to.fullPath }});

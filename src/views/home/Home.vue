@@ -1,6 +1,6 @@
 <template>
   <Layout>
-    <div>欢迎来到Portal</div>
+    <h1 class="w-full h-full text-center"> 欢迎来到我的Portal系统 </h1>
   </Layout>
 </template>
 
