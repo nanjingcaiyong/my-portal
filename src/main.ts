@@ -4,7 +4,6 @@ import Router, { registerRoutes } from '@src/router';
 import 'tailwindcss/tailwind.css';
 import { initI18n } from '@src/languages';
 import type { Menu } from '@src/apis/models/MenuModel'
-import { start } from 'qiankun';
 import { rootStore } from '@src/store'
 
 
@@ -38,8 +37,6 @@ const queryMenuList = async () => {
 queryMenuList()
   .then(registerRoutes)
   .then(bootstrap)
-
-start();
 
 
 

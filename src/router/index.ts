@@ -1,41 +1,9 @@
-import { RouteLocationNormalized, createRouter, createWebHistory } from 'vue-router';
-import { Home, Login} from '../views';
+import { RouteLocationNormalized } from 'vue-router';
 import type { Menu } from '@src/apis/models/MenuModel';
 import { Layout } from '@src/views';
 import { PORTAL_TOKEN_KEY } from '@src/utils';
-import { AUTO_LOGIN_KEY } from '@src/utils/constants';
-import {  loadMicroApp } from 'qiankun';
-import actions from '@src/store';
-import { nextTick } from 'vue';
-
-const LOGIN_PAGE_PATH = '/login'; // 登陆页地址
-const HOME_PAGE_PATH = '/home';   // 首页地址
-const notLoadAppPages = [LOGIN_PAGE_PATH, HOME_PAGE_PATH];// 不需要接入微应用的页面 
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [{
-    path: LOGIN_PAGE_PATH, 
-    component: Login
-  }, {
-    path: HOME_PAGE_PATH, 
-    component: Home,
-    meta: {
-      requiresAuth: true
-    }
-  }]
-})
-
-/**
- * @description 页面加载微应用
- * @param to 
- * @param menus 菜单
- */
-const pageLoadMicroApp = (to: RouteLocationNormalized, menus: Menu[]) => {
-  if (!to.matched.some(t => notLoadAppPages.includes(t.path))) {
-    registerSystem(menus)
-  }
-}
+import { AUTO_LOGIN_KEY, LOGIN_PAGE_PATH, HOME_PAGE_PATH } from '@src/utils/constants';
+import router from './routes'
 
 /**
  * @description 用户是否授权
@@ -85,10 +53,6 @@ const routerInterceptor = (menus: Menu[]) => {
     if (isTo(to, LOGIN_PAGE_PATH) && isAuthenticated() && isAutoLogin()) {
       return next({ path: HOME_PAGE_PATH});
     }
-    // 注册微应用
-    nextTick(() => {
-      pageLoadMicroApp(to, menus)
-    });
     // 如果路由不需要鉴权，直接允许导航
     next();
   })
@@ -115,24 +79,5 @@ export const registerRoutes = async (menus: Menu[] = []) => {
   routerInterceptor(menus)
   return menus
 }
-
-/**
- * @description 注册系统
- * @param menus 菜单
- */
-const registerSystem = (menus: Menu[] = []) => {
-  menus.forEach((menu: any) => {
-    loadMicroApp({
-      name: menu.code,
-      entry: menu.path,
-      container: `#${menu.code}`,
-      props: {
-        route: `/${menu.path}`,
-        getGlobalState: actions.getGlobalState
-      }
-    });
-  })
-}
-
 
 export default router;

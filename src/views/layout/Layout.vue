@@ -95,6 +95,8 @@ import {
 import type { ItemType } from 'ant-design-vue';
 import { MenuItemType } from 'ant-design-vue/es/menu/src/interface';
 import { PORTAL_TOKEN_KEY, PORTAL_USER_KEY, SYSTEM_LOCALE_KEY, getAccount } from '@src/utils';
+import { pageLoadMicroApp } from '@src/qiankun';
+
 
 const store = reactive<{
   items: ItemType[],
@@ -137,6 +139,9 @@ function menuToTree(menuList: any[] = []): any {
   })
 }
 
+/**
+ * @description 退出
+ */
 const onLogout = () => {
   localStorage.setItem(PORTAL_TOKEN_KEY, '')
   localStorage.setItem(PORTAL_USER_KEY, '')
@@ -157,8 +162,10 @@ const onClickMenuItem = (item: any) => {
 
 const main = async () => {
   store.items = menuToTree(rootStore.menus) || [];
+  pageLoadMicroApp(rootStore.menus)
   rootStore.account = getAccount();
 }
+
 main()
 </script>
 <style lang="less">
