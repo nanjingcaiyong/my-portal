@@ -4,6 +4,7 @@ export type Menu = {
   id: number
   code: string
   description?: string
+  menuName: string
   path: string
   type: number,
   pid: number,

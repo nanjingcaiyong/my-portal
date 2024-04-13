@@ -35,7 +35,7 @@ const registerSystem = (menus: Menu[] = []) => {
       entry: menu.path,
       container: `#${menu.code}`,
       props: {
-        route: `/${menu.path}`,
+        route: `/${menu.code}`,
         getGlobalState: actions.getGlobalState
       }
     });
@@ -47,8 +47,7 @@ const registerSystem = (menus: Menu[] = []) => {
  * @param to 
  * @param menus 菜单
  */ 
-export const pageLoadMicroApp = (menus: Menu[]) => {
-  if (!router.currentRoute.value.matched.some(t => notLoadAppPages.includes(t.path))) {
-    registerSystem(menus)
-  }
+export const pageLoadMicroApp = (menus?: Menu | Menu[]) => {
+  if (menus === undefined) return;
+  registerSystem(Array.isArray(menus) ? menus : [menus])
 }

@@ -69,19 +69,23 @@
             </a-col>
           </a-row>
         </a-layout-header>
-        <a-layout-content
-          :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
-        >
-          <slot>
-            <div :id="menu.code" v-for="menu in rootStore.menus"></div>
-          </slot>
-        </a-layout-content>
+        <a-tabs v-model:activeKey="store.activeKey" hide-add type="editable-card">
+          <a-tab-pane v-for="pane in store.panes" :key="pane.key" :tab="pane.title" :closable="pane.closable">
+            <a-layout-content
+              :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px' }"
+            >
+              <slot>
+                <div :id="pane.code"></div>
+              </slot>
+            </a-layout-content>
+          </a-tab-pane>
+        </a-tabs>
       </a-layout>
     </a-layout>
   </a-watermark>
 </template>
 <script lang="ts" setup>
-import { reactive, VueElement, h } from 'vue';
+import { reactive, VueElement, h, nextTick } from 'vue';
 import { useI18n } from "vue-i18n";
 import { rootStore } from '@src/store';
 const { locale } = useI18n();
@@ -92,20 +96,27 @@ import {
   MenuFoldOutlined,
   GlobalOutlined
 } from '@ant-design/icons-vue';
-import type { ItemType } from 'ant-design-vue';
-import { MenuItemType } from 'ant-design-vue/es/menu/src/interface';
-import { PORTAL_TOKEN_KEY, PORTAL_USER_KEY, SYSTEM_LOCALE_KEY, getAccount } from '@src/utils';
+import { type ItemType } from 'ant-design-vue';
+import { MenuInfo, MenuItemType } from 'ant-design-vue/es/menu/src/interface';
+import { SYSTEM_LOCALE_KEY, getAccount, logout } from '@src/utils';
 import { pageLoadMicroApp } from '@src/qiankun';
+import { actions } from '@src/qiankun'
+import { loadMicroApp, setDefaultMountApp } from 'qiankun'
+
 
 
 const store = reactive<{
   items: ItemType[],
   selectedKeys: string[],
-  collapsed: boolean
+  collapsed: boolean,
+  activeKey: string,
+  panes: any[]
 }>({
   items: [],
   selectedKeys: ['1'],
-  collapsed: false
+  collapsed: false,
+  activeKey: '1',
+  panes: []
 })
 
 const triggerLanguage = (e: MenuItemType) => {
@@ -143,8 +154,7 @@ function menuToTree(menuList: any[] = []): any {
  * @description 退出
  */
 const onLogout = () => {
-  localStorage.setItem(PORTAL_TOKEN_KEY, '')
-  localStorage.setItem(PORTAL_USER_KEY, '')
+  logout();
   router.push({
     path: '/login'
   })
@@ -154,15 +164,19 @@ const onLogout = () => {
  * @description 菜单点击
  * @param item 菜单
  */
-const onClickMenuItem = (item: any) => {
+const onClickMenuItem = ({item, key, keyPath} : MenuInfo) => {
   router.push({
-    path: item.item.to
+    path: item.to
   })
+
+  const system = rootStore.menus.find(menu => menu.id === keyPath?.[0]);
+  if (store.panes.length && store.panes.findIndex(pane => pane.code === system?.code) !== -1) return;
+  store.panes.push({ title: system?.menuName, code: system?.code, key: String(system?.id) });
+  pageLoadMicroApp(system)
 }
 
 const main = async () => {
   store.items = menuToTree(rootStore.menus) || [];
-  pageLoadMicroApp(rootStore.menus)
   rootStore.account = getAccount();
 }
 

@@ -6,7 +6,6 @@ import { initI18n } from '@src/languages';
 import type { Menu } from '@src/apis/models/MenuModel'
 import { rootStore } from '@src/store'
 
-
 /**
  * @description 挂载应用
  * @param menus 菜单
@@ -37,8 +36,6 @@ const queryMenuList = async () => {
 queryMenuList()
   .then(registerRoutes)
   .then(bootstrap)
-
-
 
 
 

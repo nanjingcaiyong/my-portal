@@ -24,3 +24,8 @@ export const setAccount = (account: Record<string, any>) => {
 export const getAccount = () => {
   return JSON.parse(localStorage.getItem(PORTAL_USER_KEY) || '{}')
 }
+
+export const logout = () => {
+  localStorage.setItem(PORTAL_TOKEN_KEY, '')
+  localStorage.setItem(PORTAL_USER_KEY, '')
+}
