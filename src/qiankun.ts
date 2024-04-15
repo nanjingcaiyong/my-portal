@@ -1,9 +1,5 @@
 import { loadMicroApp } from 'qiankun';
-import { Menu } from '@src/apis/models/MenuModel';
-import { LOGIN_PAGE_PATH, HOME_PAGE_PATH } from '@src/utils';
 import { initGlobalState, MicroAppStateActions } from 'qiankun';
-const notLoadAppPages = [LOGIN_PAGE_PATH, HOME_PAGE_PATH];// 不需要接入微应用的页面 
-
 
 const store: Record<string, any> = {
   token: ''
@@ -28,7 +24,7 @@ actions.getGlobalState = (key: string) => {
  * @description 注册系统
  * @param menus 菜单
  */
-const registerSystem = (menus: Menu[] = []) => {
+const registerSystem = (menus: IMenu[] = []) => {
   menus.forEach((menu: any) => {
     loadMicroApp({
       name: menu.code,

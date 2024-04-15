@@ -1,5 +1,4 @@
 import { RouteLocationNormalized } from 'vue-router';
-import type { Menu } from '@src/apis/models/MenuModel';
 import { Layout } from '@src/views';
 import { PORTAL_TOKEN_KEY } from '@src/utils';
 import { AUTO_LOGIN_KEY, LOGIN_PAGE_PATH, HOME_PAGE_PATH } from '@src/utils/constants';
@@ -44,7 +43,7 @@ const isTo = (to: RouteLocationNormalized, path: string) => {
  * @description 拦截路由
  * @param menus 菜单
  */
-const routerInterceptor = (menus: Menu[]) => {
+const routerInterceptor = (menus: IMenu[]) => {
   router.beforeEach((to, from, next) => {
     if (to.path === '/') {
       return next({
@@ -67,7 +66,7 @@ const routerInterceptor = (menus: Menu[]) => {
  * @description 注册路由
  * @param menus 菜单
  */
-export const registerRoutes = async (menus: Menu[] = []) => {
+export const registerRoutes = async (menus: IMenu[] = []) => {
   let index = -1;
   if (menus.length === 0) return;
   while(++index < menus.length) {

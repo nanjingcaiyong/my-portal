@@ -3,11 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Menu } from '@src/apis/models/MenuModel';
 import { reactive } from 'vue';
 import { getAccount } from '@src/utils';
 const props = withDefaults(defineProps<{
-  menus: Menu[]
+  menus: IMenu[]
 }>(), {
   menus: () => ([])
 })

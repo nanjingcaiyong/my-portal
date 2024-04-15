@@ -1,8 +1,7 @@
 import { reactive } from 'vue';
-import type { Menu } from '@src/apis/models/MenuModel';
 
 export const rootStore = reactive<{
-  menus: Menu[], 
+  menus: IMenu[], 
   account: Record<string, any>,
   updateAccount: (account: Record<string, any>) => void
 }>({

@@ -14,4 +14,4 @@ export type Menu = {
   children: Menu[]
 }
 
-export type MenuData = BaseModel<Menu[]>
+export type MenuModel = BaseModel<Menu[]>
